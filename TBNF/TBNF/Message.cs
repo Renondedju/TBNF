@@ -80,8 +80,8 @@ namespace TBNF
         /// <returns></returns>
         public PackagedMessage Pack()
         {
-            using MemoryStream memory_stream = new MemoryStream();
-            using BinaryWriter binary_writer = new BinaryWriter(memory_stream);
+            using MemoryStream memory_stream = new();
+            using BinaryWriter binary_writer = new(memory_stream);
             
             binary_writer.Write(MessageName);
             
@@ -104,8 +104,8 @@ namespace TBNF
                          "Please use the MessageBuilder to avoid this error again"
                          );
             
-            using MemoryStream memory_stream = new MemoryStream();
-            using BinaryReader binary_reader = new BinaryReader(memory_stream);
+            using MemoryStream memory_stream = new();
+            using BinaryReader binary_reader = new(memory_stream);
 
             // Writing the data to the stream, and skipping the MessageName part
             memory_stream.Write(package.Bytes, 0, package.Size);

@@ -44,7 +44,10 @@ namespace SampleProject
             }.Pack();
 
             // The packages is received from the network
-            Message message = MessageBuilder.BuildMessage(package);
+            TestHandler handler = new();
+            Message     message = MessageBuilder.BuildMessage(package);
+
+            handler.HandleMessage(null, message);
             
             Console.WriteLine($"Received message type: {message}");
             Console.WriteLine($"Total size of the (packaged) structure {package.Size} bytes");

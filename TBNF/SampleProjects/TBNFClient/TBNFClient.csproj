@@ -3,10 +3,12 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
+        <AssemblyName>TBNFClient</AssemblyName>
+        <RootNamespace>TBNFClient</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TBNF\TBNF.csproj" />
+      <ProjectReference Include="..\..\TBNF\TBNF.csproj" />
     </ItemGroup>
 
 </Project>

@@ -22,30 +22,35 @@
  * SOFTWARE.
  */
 
-namespace SampleProject
+namespace TBNFClient
 {
     using TBNF;
+    using System;
 
-    /// <summary>
-    ///     Test message that can be sent to the client from the server and vice-versa
-    /// </summary>
-    [Message(EMessageAuthor.ClientHost)]
-    public class TestMessage : SimpleMessage<TestMessage.Content>
+    internal static class Program
     {
-        public struct Content
+        private static void Main()
         {
-            public int    Value1;
-            public int    Value2;
-            public string Test;
-        }
-    }
-    
-    [Message(EMessageAuthor.ClientHost)]
-    public class TestMessage2 : SimpleMessage<TestMessage2.Content>
-    {
-        public struct Content
-        {
-            public string String;
+            // Registering every message class defined in the assembly
+            MessageRegister.RegisterAssembly(typeof(Program).Assembly);
+
+            // Creating and packing the message to be sent over the network
+            PackagedMessage package = new TestMessage {
+                Data = {
+                    Value1 = 1,
+                    Value2 = 0,
+                    Test   = "Some long string"
+                }
+            }.Pack();
+
+            // The packages is received from the network
+            TestHandler handler = new();
+            Message     message = MessageBuilder.BuildMessage(package);
+
+            handler.HandleMessage(null, message);
+            
+            Console.WriteLine($"Received message type: {message}");
+            Console.WriteLine($"Total size of the (packaged) structure {package.Size} bytes");
         }
     }
 }

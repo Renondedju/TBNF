@@ -24,9 +24,10 @@
 
 namespace TBNF
 {
-    using System;
-
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class MessageAttribute : Attribute
-    { }
+    public static class DiscoveryInfo
+    {
+        public const string BroadcastHeader = "BRODISCOVERYTBNF";
+        public const string AnswerHeader    = "ANSDISCOVERYTBNF";
+        public const int    DiscoveryPort   = 43595;
+    }
 }

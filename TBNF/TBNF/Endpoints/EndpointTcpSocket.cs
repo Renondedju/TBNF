@@ -22,30 +22,44 @@
  * SOFTWARE.
  */
 
-namespace TBNFClient
+namespace TBNF
 {
-    using TBNF;
+    using System;
+    using System.Net.Sockets;
+    using System.Threading;
 
     /// <summary>
-    ///     Test message that can be sent to the client from the server and vice-versa
+    ///     Wraps a tcp client and a cancellation source to ease cancellations and cleanup
     /// </summary>
-    [Message(EMessageAuthor.ClientHost)]
-    public class TestMessage : SimpleMessage<TestMessage.Content>
+    public class EndpointTcpSocket : IDisposable
     {
-        public struct Content
+        public EndpointTcpSocket(TcpClient client, CancellationToken cancellation_token)
         {
-            public int    Value1;
-            public int    Value2;
-            public string Test;
+            Client             = client;
+            CancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation_token);
         }
-    }
-    
-    [Message(EMessageAuthor.ClientHost)]
-    public class TestMessage2 : SimpleMessage<TestMessage2.Content>
-    {
-        public struct Content
+        
+        #region Members
+
+        public readonly TcpClient               Client;
+        public readonly CancellationTokenSource CancellationSource; 
+
+        #endregion
+        
+        #region IDisposable Members
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
         {
-            public string String;
+            CancellationSource.Cancel();
+            
+            Client            .Close();
+            Client            .Dispose();
+            CancellationSource.Dispose();
         }
+
+        #endregion
     }
 }

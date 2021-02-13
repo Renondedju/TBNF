@@ -22,35 +22,21 @@
  * SOFTWARE.
  */
 
-namespace TBNFClient
+namespace Shared
 {
     using TBNF;
-    using System;
 
-    internal static class Program
+    public class TestHandler : MessageHandler
     {
-        private static void Main()
+        /// <summary>
+        ///     Default handler
+        ///     If a message does not have a custom handler, this method will be called instead
+        /// </summary>
+        /// <param name="emitter">Endpoint that received the message</param>
+        /// <param name="message">Received message</param>
+        protected override void DefaultHandler(Endpoint emitter, Message message)
         {
-            // Registering every message class defined in the assembly
-            MessageRegister.RegisterAssembly(typeof(Program).Assembly);
-
-            // Creating and packing the message to be sent over the network
-            PackagedMessage package = new TestMessage {
-                Data = {
-                    Value1 = 1,
-                    Value2 = 0,
-                    Test   = "Some long string"
-                }
-            }.Pack();
-
-            // The packages is received from the network
-            TestHandler handler = new();
-            Message     message = MessageBuilder.BuildMessage(package);
-
-            handler.HandleMessage(null, message);
-            
-            Console.WriteLine($"Received message type: {message}");
-            Console.WriteLine($"Total size of the (packaged) structure {package.Size} bytes");
+            // Ignoring un-handled messages
         }
     }
 }

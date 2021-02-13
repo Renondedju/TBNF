@@ -22,11 +22,17 @@
  * SOFTWARE.
  */
 
-namespace TBNF
+namespace TBNF.SystemMessages
 {
-    using System;
-
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class MessageAttribute : Attribute
-    { }
+    /// <summary>
+    ///     Sent by the <see cref="EndpointAuthenticator"/> to every connected <see cref="Endpoint"/> to notify of a new connection
+    /// </summary>
+    [Message]
+    public class ClientConnectedMessage : MarchalledMessage<ClientConnectedMessage.Content>
+    {
+        public struct Content
+        {
+            public byte ClientIdentifier;
+        }
+    }
 }

@@ -36,21 +36,17 @@ namespace TBNF
     {
         protected Message()
         {
-            // We are using a bit of reflection here to fetch the message name automatically
-            // This wont impact performances by a lot since the request is really targeted (in average the whole allocation of the class takes ~0.013 ms)
-            Type             type      = GetType();
-            MessageAttribute attribute = (MessageAttribute) type.GetCustomAttribute(typeof(MessageAttribute), true);
-
-            Debug.Assert(attribute != null, $"A message class should have a {nameof(MessageAttribute)} attribute attached");
+            Type type = GetType();
             
-            AuthorType  = attribute.AuthorType;
+            Debug.Assert(type.GetCustomAttribute(typeof(MessageAttribute), true) != null,
+                         $"A message class should have a {nameof(MessageAttribute)} attribute attached");
+            
             MessageName = MessageRegister.GetMessageName(type);
         }
 
         #region Members
 
-        public readonly EMessageAuthor AuthorType;
-        public readonly ushort         MessageName;
+        public readonly ushort MessageName;
 
         #endregion
 
@@ -80,8 +76,8 @@ namespace TBNF
         /// <returns></returns>
         public PackagedMessage Pack()
         {
-            using MemoryStream memory_stream = new();
-            using BinaryWriter binary_writer = new(memory_stream);
+            using MemoryStream memory_stream = new MemoryStream();
+            using BinaryWriter binary_writer = new BinaryWriter(memory_stream);
             
             binary_writer.Write(MessageName);
             
@@ -100,12 +96,12 @@ namespace TBNF
             // Checking for package compatibility
             // This will avoid further errors later on in the program
             Debug.Assert(package.MessageName == MessageName,
-                         "The package.MessageName does not correspond to the MessageName of this message." +
+                         "The package.MessageName does not correspond to the MessageName of this message. " +
                          "Please use the MessageBuilder to avoid this error again"
                          );
             
-            using MemoryStream memory_stream = new();
-            using BinaryReader binary_reader = new(memory_stream);
+            using MemoryStream memory_stream = new MemoryStream();
+            using BinaryReader binary_reader = new BinaryReader(memory_stream);
 
             // Writing the data to the stream, and skipping the MessageName part
             memory_stream.Write(package.Bytes, 0, package.Size);

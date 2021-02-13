@@ -22,15 +22,12 @@
  * SOFTWARE.
  */
 
-namespace TBNFHost
+namespace TBNF.SystemMessages
 {
-    using System;
-
-    internal static class Program
-    {
-        private static void Main(string[] args)
-        {
-            Console.WriteLine("Host: Hello world !");
-        }
-    }
+    /// <summary>
+    ///     This message holds no data is is used only for connectivity checks
+    /// </summary>
+    [Message]
+    internal class InactivityCheckMessage : Message 
+    { }
 }

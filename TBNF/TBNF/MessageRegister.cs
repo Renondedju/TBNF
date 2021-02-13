@@ -41,6 +41,9 @@ namespace TBNF
     {
         static MessageRegister()
         {
+            // Registering our own assembly, system messages are contained in it
+            RegisterAssembly(typeof(MessageRegister).Assembly);
+            
             // Iterating over every type of the app domain and registering classes marked by the "MessageAttribute" attribute
             // Each assembly and type is sorted by full name to enforce determinism
             // The only condition is that there is the same set of messages both on client and server side
@@ -51,8 +54,8 @@ namespace TBNF
         #region Members
 
         private static          ushort                   s_index            = 1;
-        private static readonly Dictionary<Type, ushort> s_register         = new();
-        private static readonly Dictionary<ushort, Type> s_reverse_register = new();
+        private static readonly Dictionary<Type, ushort> s_register         = new Dictionary<Type, ushort>();
+        private static readonly Dictionary<ushort, Type> s_reverse_register = new Dictionary<ushort, Type>();
 
         #endregion
 

@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-namespace TBNF
+namespace TBNF.SystemMessages
 {
-    using System;
-
     /// <summary>
-    ///     Describes the author of the message,
-    ///     this is only used during development to make sure that every message is used like it is meant to be
+    ///     Sent by a <see cref="EndpointAuthenticator"/> to a <see cref="Endpoint"/> to confirm a connection
+    ///     and assign it a unique identifier
     /// </summary>
-    [Flags]
-    public enum EMessageAuthor
+    [Message]
+    public class LoginConfirmationMessage : MarchalledMessage<LoginConfirmationMessage.Content>
     {
-        Client     = 1 << 0,       // Client only message, host should not send this message
-        Host       = 1 << 1,       // Host only message, client should not send this message
-        ClientHost = Host | Client // Client and host are allowed to send this message
+        public struct Content
+        {
+            public byte NetworkIdentifier;
+        }
     }
 }

@@ -22,22 +22,17 @@
  * SOFTWARE.
  */
 
-namespace TBNFClient
+namespace TBNF.SystemMessages
 {
-    using TBNF;
-    using System;
-    using System.Net.Sockets;
-
-    public class TestHandler : MessageHandler
+    /// <summary>
+    ///     Sent by the <see cref="EndpointAuthenticator"/> to every connected <see cref="Endpoint"/> to notify of a new connection
+    /// </summary>
+    [Message]
+    public class ClientDisconnectedMessage : MarchalledMessage<ClientDisconnectedMessage.Content>
     {
-        private void TestMessageHandler(TcpClient client, TestMessage message)
+        public struct Content
         {
-            Console.WriteLine("Test message custom handler !");
-        }
-        
-        private void TestMessage2Handler(TcpClient client, TestMessage2 message)
-        {
-            Console.WriteLine("Test message 2 custom handler !");
+            public byte ClientIdentifier;
         }
     }
 }

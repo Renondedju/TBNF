@@ -2,7 +2,6 @@
 {
     using System;
     using System.Reflection;
-    using System.Net.Sockets;
     using System.Diagnostics;
     using System.Collections.Generic;
     
@@ -20,28 +19,28 @@
             foreach (MethodInfo method_info in GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 ParameterInfo[] parameters = method_info.GetParameters();
-             
-                if (method_info  .ReturnType    == typeof(void)      &&   // Return type must be void
-                    parameters   .Length        == 2                 &&  // There must be 2 parameters at most
-                    parameters[0].ParameterType == typeof(TcpClient) && // First type must be a TcpClient
-                    parameters[1].ParameterType.GetCustomAttribute<MessageAttribute>() != null) // And last type a message type
-                {
-                    // Extracting the message name of the second type 
-                    ushort message_name = MessageRegister.GetMessageName(parameters[1].ParameterType);
+
+                if (method_info.ReturnType      != typeof(void)     ||
+                    parameters.Length           != 2                ||
+                    parameters[0].ParameterType != typeof(Endpoint) ||
+                    parameters[1].ParameterType.GetCustomAttribute<MessageAttribute>() == null)
                     
-                    Debug.Assert(!m_handler_cache.ContainsKey(message_name),
-                                 "Two or more handlers for the same message have been defined in the same class." +
-                                 " Only one is allowed at a time");
+                    continue;
+
+                // Extracting the message name of the second type 
+                ushort message_name = MessageRegister.GetMessageName(parameters[1].ParameterType);
                     
-                    // Adding a message handler to the cache
-                    m_handler_cache.Add(message_name, method_info);
-                }
+                Debug.Assert(!m_handler_cache.ContainsKey(message_name),
+                    "Two or more handlers for the same message have been defined in the same class. Only one is allowed at a time");
+                    
+                // Adding a message handler to the cache
+                m_handler_cache.Add(message_name, method_info);
             }
         }
 
         #region Members
 
-        private readonly Dictionary<ushort, MethodInfo> m_handler_cache = new();
+        private readonly Dictionary<ushort, MethodInfo> m_handler_cache = new Dictionary<ushort, MethodInfo>();
         
         #endregion
         
@@ -50,10 +49,15 @@
         /// <summary>
         ///     Handles the message using one of the pre defined custom handlers
         /// </summary>
-        /// <param name="emitter">TcpClient that the message has been received from</param>
+        /// <param name="emitter">Endpoint that received the message</param>
         /// <param name="message">Received message</param>
-        public void HandleMessage(TcpClient emitter, Message message)
+        public void HandleMessage(Endpoint emitter, Message message)
         {
+            // In case of cancellation, the received message will be considered as null
+            // For code readability and flexibility purposes, we are checking here if everything is good
+            if (message == null)
+                return;
+            
             if (m_handler_cache.ContainsKey(message.MessageName))
                 m_handler_cache[message.MessageName].Invoke(this, new object[] {emitter, message});
             else
@@ -64,9 +68,9 @@
         ///     Default handler
         ///     If a message does not have a custom handler, this method will be called instead
         /// </summary>
-        /// <param name="emitter">TcpClient that the message has been received from</param>
+        /// <param name="emitter">Endpoint that received the message</param>
         /// <param name="message">Received message</param>
-        protected virtual void DefaultHandler(TcpClient emitter, Message message)
+        protected virtual void DefaultHandler(Endpoint emitter, Message message)
         {
             Console.WriteLine($"Received an unhandled message: {message}");
         }

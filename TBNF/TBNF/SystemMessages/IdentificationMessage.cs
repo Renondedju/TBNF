@@ -55,7 +55,7 @@ namespace TBNF.SystemMessages
             // Even tho a mac address can be 8 bytes long, we only write 6 here
             // The main purpose of this address is to give the server a unique device identifier
             // Sending the whole address isn't a big deal in this case
-            binary_writer.Write(MacAddress.GetAddressBytes(), 0, 6);            
+            binary_writer.Write(MacAddress.GetAddressBytes(), 0, 6);
         }
 
         /// <summary>

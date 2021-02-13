@@ -13,15 +13,14 @@
     /// </summary>
     public abstract class MessageHandler
     {
-        protected MessageHandler()
+        protected MessageHandler(IEnumerable<Type> ignored_messages = null)
         {
             // Looping over every method in the handler
             foreach (MethodInfo method_info in GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 ParameterInfo[] parameters = method_info.GetParameters();
 
-                if (method_info.ReturnType      != typeof(void)     ||
-                    parameters.Length           != 2                ||
+                if (parameters.Length           != 2                ||
                     parameters[0].ParameterType != typeof(Endpoint) ||
                     parameters[1].ParameterType.GetCustomAttribute<MessageAttribute>() == null)
                     
@@ -35,6 +34,21 @@
                     
                 // Adding a message handler to the cache
                 m_handler_cache.Add(message_name, method_info);
+            }
+
+            if (ignored_messages == null)
+                return;
+            
+            // Handling ignored messages
+            MethodInfo ignored_handler_info = GetType().GetMethod(nameof(IgnoredMessageHandler));
+            foreach (Type ignored_message_type in ignored_messages)
+            {
+                ushort message_name = MessageRegister.GetMessageName(ignored_message_type);
+                
+                Debug.Assert(!m_handler_cache.ContainsKey(message_name),
+                    $"The message type {ignored_message_type} has been set to be ignored, but a handler has been defined to its name");
+                
+                m_handler_cache.Add(message_name, ignored_handler_info);
             }
         }
 
@@ -63,6 +77,15 @@
             else
                 DefaultHandler(emitter, message);
         }
+
+        /// <summary>
+        ///     Ignored message handler
+        ///     Every ignored message will use this empty handler
+        /// </summary>
+        /// <param name="emitter">Endpoint that received the message</param>
+        /// <param name="message">Received message</param>
+        protected virtual void IgnoredMessageHandler(Endpoint emitter, Message message)
+        { }
         
         /// <summary>
         ///     Default handler

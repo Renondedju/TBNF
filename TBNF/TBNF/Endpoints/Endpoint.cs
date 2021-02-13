@@ -108,9 +108,9 @@ namespace TBNF
         /// </summary>
         public void Dispose()
         {
-            CurrentSocket?.Dispose();
-            
             GlobalCancellation?.Cancel();
+
+            CurrentSocket     ?.Dispose();
             GlobalCancellation?.Dispose();
         }
 

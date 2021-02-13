@@ -26,7 +26,9 @@ namespace SampleHost
 {
     using System;
     using Shared;
+    
     using TBNF;
+    using TBNF.Handlers;
 
     /// <summary>
     ///     Host sample program
@@ -39,11 +41,10 @@ namespace SampleHost
             MessageRegister.RegisterAssembly(typeof(StringMessage).Assembly);
 
             // Creating the host endpoint
-            TestHandler              handler = new TestHandler();
-            DiscoverableEndpointInfo info    = new DiscoverableEndpointInfo { Name = Environment.MachineName, GameIdentifier = "Sample Game" };
+            DiscoverableEndpointInfo info = new DiscoverableEndpointInfo { Name = Environment.MachineName, GameIdentifier = "Sample Game" };
             
             // Using 0 as the port number to automatically get a new free port if needed
-            using DiscoverableEndpointAuthenticator authenticator = new DiscoverableEndpointAuthenticator(handler, 8865, info)
+            using DiscoverableEndpointAuthenticator authenticator = new DiscoverableEndpointAuthenticator(new DefaultHandler(), 8865, info)
             {
                 InactivityCheckInterval = TimeSpan.FromSeconds(7)
             };
@@ -55,8 +56,8 @@ namespace SampleHost
                 endpoint.OnConnectionSuccess  += client => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Connected");
                 endpoint.OnConnectionFailure  += client => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Connection attempt failed");
                 endpoint.OnDisconnection      += client => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Disconnected");
-                endpoint.OnRawMessageReceived += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message received {message}");
-                endpoint.OnRawMessageSent     += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message sent {message}");
+                //endpoint.OnRawMessageReceived += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message received {message}");
+                //endpoint.OnRawMessageSent     += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message sent {message}");
             };
 
             // The service can now be accessed.

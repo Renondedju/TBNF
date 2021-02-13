@@ -25,12 +25,13 @@
 namespace SampleClient
 {
     using System;
-    using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
     using Shared;
+    
     using TBNF;
-    using TBNF.SystemMessages;
+    using TBNF.Handlers;
 
     /// <summary>
     ///     Client sample program
@@ -69,7 +70,7 @@ namespace SampleClient
         /// <param name="port">IP port of the server</param>
         private static async Task StartClient(IPAddress address, int port)
         {
-            TestHandler          handler  = new TestHandler();
+            DefaultHandler       handler  = new DefaultHandler();
             using ClientEndpoint endpoint = new ClientEndpoint(handler, address, port)
             {
                 InactivityCheckInterval = TimeSpan.FromSeconds(5),
@@ -93,9 +94,6 @@ namespace SampleClient
 
                 await Task.Delay(2000);
             }
-
-            endpoint.EnqueueMessage(new ClientConnectedMessage());    // We should get kicked here
-            endpoint.EnqueueMessage(new ClientDisconnectedMessage()); // And automatically be reconnected here
 
             await Task.Delay(50000);
         }

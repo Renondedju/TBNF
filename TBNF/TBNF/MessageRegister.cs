@@ -43,12 +43,6 @@ namespace TBNF
         {
             // Registering our own assembly, system messages are contained in it
             RegisterAssembly(typeof(MessageRegister).Assembly);
-            
-            // Iterating over every type of the app domain and registering classes marked by the "MessageAttribute" attribute
-            // Each assembly and type is sorted by full name to enforce determinism
-            // The only condition is that there is the same set of messages both on client and server side
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(assembly => assembly.FullName).AsParallel())
-                RegisterAssembly(assembly);
         }
 
         #region Members

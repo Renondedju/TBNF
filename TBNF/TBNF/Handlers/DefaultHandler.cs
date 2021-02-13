@@ -22,21 +22,23 @@
  * SOFTWARE.
  */
 
-namespace Shared
+namespace TBNF.Handlers
 {
-    using TBNF;
+    using SystemMessages;
 
-    public class TestHandler : MessageHandler
+    /// <summary>
+    ///     Default message handler
+    ///     Ignores system messages that are not meant to be handled
+    /// </summary>
+    public class DefaultHandler : MessageHandler
     {
-        /// <summary>
-        ///     Default handler
-        ///     If a message does not have a custom handler, this method will be called instead
-        /// </summary>
-        /// <param name="emitter">Endpoint that received the message</param>
-        /// <param name="message">Received message</param>
-        protected override void DefaultHandler(Endpoint emitter, Message message)
+        public DefaultHandler() : base(new[]
         {
-            // Ignoring un-handled messages
-        }
+            // Ignored message types
+            typeof(IdentificationMessage),
+            typeof(InactivityCheckMessage),
+            typeof(LoginConfirmationMessage)
+        })
+        { }
     }
 }

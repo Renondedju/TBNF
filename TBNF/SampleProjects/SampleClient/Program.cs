@@ -84,6 +84,8 @@ namespace SampleClient
             endpoint.OnRawMessageReceived += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message received {message}");
             endpoint.OnRawMessageSent     += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message sent {message}");
 
+            endpoint.Start();
+            
             for (int i = 0; i < 5; i++)
             {
                 // Enqueuing the message to be sent once the endpoint is connected

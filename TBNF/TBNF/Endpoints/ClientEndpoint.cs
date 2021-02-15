@@ -57,9 +57,6 @@ namespace TBNF
             // Automatic reconnection logic
             OnDisconnection     += async _ => await RequestConnection(ConnectionTimeout);
             OnConnectionFailure += async _ => await RequestConnection(ConnectionTimeout);
-            
-            // Requesting an initial connection
-            Task _ = RequestConnection(ConnectionTimeout);
         }
 
         #region Members
@@ -71,6 +68,15 @@ namespace TBNF
 
         #region Exposed Methods
 
+        /// <summary>
+        ///     Starts the client and begins an initial connection
+        ///     Use the <see cref=".Dispose"/> method to stop the client
+        /// </summary>
+        public void Start()
+        {
+            Task _ = RequestConnection(ConnectionTimeout);
+        }
+        
         /// <summary>
         ///     Handles a connection handshake
         /// </summary>

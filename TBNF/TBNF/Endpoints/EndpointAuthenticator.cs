@@ -45,15 +45,10 @@ namespace TBNF
         /// <param name="listening_port">Port to listen to</param>
         public EndpointAuthenticator(MessageHandler handler, int listening_port)
         {
-            m_clients = new Dictionary<PhysicalAddress, RemoteEndpoint>();
-            m_message_handler   = handler;
-            m_tcp_socket        = TcpListener.Create(listening_port);
-            m_end_token         = new CancellationTokenSource();
-
-            m_tcp_socket.Start();
-
-            // Starting the host main loop an another thread
-            Task _ = Task.Run(HostLoop);
+            m_message_handler = handler;
+            m_tcp_socket      = TcpListener.Create(listening_port);
+            m_end_token       = new CancellationTokenSource();
+            m_clients         = new Dictionary<PhysicalAddress, RemoteEndpoint>();
         }
 
         #endregion
@@ -91,6 +86,18 @@ namespace TBNF
 
         #region Exposed Methods
 
+        /// <summary>
+        ///     Starts the endpoint
+        ///     Use the <see cref=".Dispose"/> method to stop the endpoint
+        /// </summary>
+        public virtual void Start()
+        {
+            m_tcp_socket.Start();
+
+            // Starting the host main loop an another thread
+            Task _ = Task.Run(HostLoop);
+        }
+        
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

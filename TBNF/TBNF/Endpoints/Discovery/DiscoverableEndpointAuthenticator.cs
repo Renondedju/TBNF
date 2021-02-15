@@ -42,15 +42,6 @@ namespace TBNF
             EndpointInfo       = endpoint_info;
             m_data_stream      = new byte[1024];
             m_discovery_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            
-            m_discovery_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            m_discovery_socket.Bind(new IPEndPoint(IPAddress.Any, DiscoveryInfo.DiscoveryPort));
-
-            IPEndPoint clients   = new IPEndPoint(IPAddress.Any, 0);
-            EndPoint   ep_sender = clients;
-            
-            // Starting to listen for discovery broadcasts
-            m_discovery_socket.BeginReceiveFrom(m_data_stream, 0, m_data_stream.Length, SocketFlags.None, ref ep_sender, TryAnswerDiscoveryBroadcast, ep_sender);           
         }
 
         #region Members
@@ -62,6 +53,24 @@ namespace TBNF
         #endregion
 
         #region Exposed Metods
+
+        /// <summary>
+        ///     Starts the endpoint
+        ///     Use the <see cref=".Dispose"/> method to stop the endpoint
+        /// </summary>
+        public override void Start()
+        {
+            base.Start();
+            
+            m_discovery_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            m_discovery_socket.Bind(new IPEndPoint(IPAddress.Any, DiscoveryInfo.DiscoveryPort));
+
+            IPEndPoint clients   = new IPEndPoint(IPAddress.Any, 0);
+            EndPoint   ep_sender = clients;
+            
+            // Starting to listen for discovery broadcasts
+            m_discovery_socket.BeginReceiveFrom(m_data_stream, 0, m_data_stream.Length, SocketFlags.None, ref ep_sender, TryAnswerDiscoveryBroadcast, ep_sender);  
+        }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

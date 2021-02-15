@@ -60,6 +60,8 @@ namespace SampleHost
                 //endpoint.OnRawMessageSent     += (client, message) => Console.WriteLine($"Endpoint {client.NetworkIdentifier} : Message sent {message}");
             };
 
+            authenticator.Start();
+            
             // The service can now be accessed.
             Console.WriteLine("Press <ENTER> to terminate service.");
             Console.ReadLine();

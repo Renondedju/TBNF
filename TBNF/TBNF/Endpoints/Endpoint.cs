@@ -49,6 +49,17 @@ namespace TBNF
             MessageQueue       = new ConcurrentQueue<Message>();
             MessageQueueLatch  = new CountdownLatch();
             GlobalCancellation = new CancellationTokenSource();
+            
+            // Captured by a lambda bellow
+            bool initial_connection = true;
+            
+            OnConnectionSuccess += _ =>
+            {
+                if (initial_connection)
+                    OnInitialConnection?.Invoke(this);
+
+                initial_connection = false;
+            };
         }
 
         #endregion
@@ -301,6 +312,11 @@ namespace TBNF
         /// </summary>
         public event Action<Endpoint> OnDisconnection;
 
+        /// <summary>
+        ///     Fired once an initial connection is done
+        /// </summary>
+        public event Action<Endpoint> OnInitialConnection;
+        
         #endregion
     }
 }

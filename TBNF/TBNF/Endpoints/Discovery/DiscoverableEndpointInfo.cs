@@ -52,24 +52,25 @@ namespace TBNF
         /// <returns>Byte array</returns>
         internal byte[] Serialize(IPAddress ip_address, int port)
         {
-            using MemoryStream memory_stream = new MemoryStream();
-            using BinaryWriter binary_writer = new BinaryWriter(memory_stream);
+            using (MemoryStream memory_stream = new MemoryStream())
+            using (BinaryWriter binary_writer = new BinaryWriter(memory_stream))
+            {
+                // Writing data
+                binary_writer.Write((ushort)(AdditionalData?.Length ?? 0));
+                binary_writer.Write(Name);
+                binary_writer.Write(GameIdentifier);
+                binary_writer.Write(AdditionalData ?? new byte[0]);
 
-            // Writing data
-            binary_writer.Write((ushort)(AdditionalData?.Length ?? 0));
-            binary_writer.Write(Name);
-            binary_writer.Write(GameIdentifier);
-            binary_writer.Write(AdditionalData ?? new byte[0]);
-
-            // Writing address
-            binary_writer.Write((byte) ip_address.GetAddressBytes().Length);
-            binary_writer.Write(       ip_address.GetAddressBytes());
-            binary_writer.Write(port);
+                // Writing address
+                binary_writer.Write((byte) ip_address.GetAddressBytes().Length);
+                binary_writer.Write(       ip_address.GetAddressBytes());
+                binary_writer.Write(port);
             
-            Debug.Assert(memory_stream.GetBuffer().Length <= 65507,
-                         "An UDP package cannot be longer than 65507 bytes long!");
+                Debug.Assert(memory_stream.GetBuffer().Length <= 65507,
+                             "An UDP package cannot be longer than 65507 bytes long!");
                 
-            return memory_stream.GetBuffer();
+                return memory_stream.GetBuffer();
+            }
         }
 
         /// <summary>
@@ -78,20 +79,21 @@ namespace TBNF
         /// <param name="incoming_data">Incoming data</param>
         internal IPEndPoint Deserialize(byte[] incoming_data)
         {
-            using MemoryStream memory_stream = new MemoryStream(incoming_data);
-            using BinaryReader binary_reader = new BinaryReader(memory_stream);
-
-            ushort additional_length = binary_reader.ReadUInt16();
+            using (MemoryStream memory_stream = new MemoryStream(incoming_data))
+            using (BinaryReader binary_reader = new BinaryReader(memory_stream))
+            {
+                ushort additional_length = binary_reader.ReadUInt16();
             
-            Name           = binary_reader.ReadString();
-            GameIdentifier = binary_reader.ReadString();
-            AdditionalData = binary_reader.ReadBytes(additional_length);
+                Name           = binary_reader.ReadString();
+                GameIdentifier = binary_reader.ReadString();
+                AdditionalData = binary_reader.ReadBytes(additional_length);
 
-            byte      address_length = binary_reader.ReadByte();
-            IPAddress ip_address     = new IPAddress(binary_reader.ReadBytes(address_length));
-            int       port           = binary_reader.ReadInt32();
+                byte      address_length = binary_reader.ReadByte();
+                IPAddress ip_address     = new IPAddress(binary_reader.ReadBytes(address_length));
+                int       port           = binary_reader.ReadInt32();
             
-            return new IPEndPoint(ip_address, port);
+                return new IPEndPoint(ip_address, port);
+            }
         }
 
         #endregion

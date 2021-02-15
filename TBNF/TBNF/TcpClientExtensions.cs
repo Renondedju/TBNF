@@ -58,7 +58,7 @@ namespace TBNF
                 do
                 {
                     // Attempting to read the data
-                    bytes_read      =  await client.GetStream().ReadAsync(buffer.AsMemory(bytes_read, bytes_remaining), cancellation_token);
+                    bytes_read      =  await client.GetStream().ReadAsync(buffer, bytes_read, bytes_remaining, cancellation_token);
                     bytes_remaining -= bytes_read;
                 } while (bytes_remaining > 0 && bytes_read > 0);
             }
@@ -101,8 +101,8 @@ namespace TBNF
 
                 // Creating the package containing the actual message
                 // + 2 bytes storing the size of the message
-                await network_stream.WriteAsync(BitConverter.GetBytes(package.Size).AsMemory(0, HeaderSize  ), cancellation_token);
-                await network_stream.WriteAsync(package.Bytes                      .AsMemory(0, package.Size), cancellation_token);
+                await network_stream.WriteAsync(BitConverter.GetBytes(package.Size), 0, HeaderSize  , cancellation_token);
+                await network_stream.WriteAsync(package.Bytes                      , 0, package.Size, cancellation_token);
 
                 // If the operation has been cancelled, we need to consider that the message has not been sent
                 return !cancellation_token.IsCancellationRequested;

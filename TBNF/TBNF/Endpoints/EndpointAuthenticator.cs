@@ -147,15 +147,17 @@ namespace TBNF
         private static async Task<PhysicalAddress> IdentifySocket(TcpClient incoming_socket, TimeSpan timeout, CancellationToken cancellation_token)
         {
             // Creating the cancellation token
-            using CancellationTokenSource cancellation_source = CancellationTokenSource.CreateLinkedTokenSource(cancellation_token);
-            cancellation_source.CancelAfter(timeout);
+            using (CancellationTokenSource cancellation_source = CancellationTokenSource.CreateLinkedTokenSource(cancellation_token))
+            {
+                cancellation_source.CancelAfter(timeout);
 
-            // Reading the first incoming message
-            IdentificationMessage identification_message = await incoming_socket.ReadMessage(cancellation_source.Token) as IdentificationMessage;
+                // Reading the first incoming message
+                IdentificationMessage identification_message = await incoming_socket.ReadMessage(cancellation_source.Token) as IdentificationMessage;
 
-            // Checking if the message is valid and retrieving the mac address of the user
-            // (A timeout would cause the ReadMessage method to return null)
-            return identification_message?.MacAddress;
+                // Checking if the message is valid and retrieving the mac address of the user
+                // (A timeout would cause the ReadMessage method to return null)
+                return identification_message?.MacAddress;
+            }
         }
 
         /// <summary>

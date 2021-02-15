@@ -59,11 +59,6 @@ namespace TBNF
         /// </summary>
         public ushort MessageName => BitConverter.ToUInt16(Bytes, 0);
         
-        /// <summary>
-        ///     Actual data of the package, stripped of any meta-data
-        /// </summary>
-        public byte[] Data => Bytes[2..];
-
         #endregion
     }
 }

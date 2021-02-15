@@ -57,7 +57,7 @@ namespace TBNF
             finally
             {
                 registered_handle?.Unregister(null);
-                await token_registration.DisposeAsync();
+                token_registration.Dispose();
             }
         }
 

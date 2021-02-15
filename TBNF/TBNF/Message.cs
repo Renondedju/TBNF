@@ -76,14 +76,15 @@ namespace TBNF
         /// <returns></returns>
         public PackagedMessage Pack()
         {
-            using MemoryStream memory_stream = new MemoryStream();
-            using BinaryWriter binary_writer = new BinaryWriter(memory_stream);
+            using (MemoryStream memory_stream = new MemoryStream())
+            using (BinaryWriter binary_writer = new BinaryWriter(memory_stream))
+            {
+                binary_writer.Write(MessageName);
             
-            binary_writer.Write(MessageName);
-            
-            SerializeAdditionalData(binary_writer);
+                SerializeAdditionalData(binary_writer);
                 
-            return new PackagedMessage(memory_stream.ToArray());
+                return new PackagedMessage(memory_stream.ToArray());
+            }
         }
 
         /// <summary>
@@ -100,14 +101,15 @@ namespace TBNF
                          "Please use the MessageBuilder to avoid this error again"
                          );
             
-            using MemoryStream memory_stream = new MemoryStream();
-            using BinaryReader binary_reader = new BinaryReader(memory_stream);
-
-            // Writing the data to the stream, and skipping the MessageName part
-            memory_stream.Write(package.Bytes, 0, package.Size);
-            memory_stream.Seek (sizeof(ushort), SeekOrigin.Begin);
+            using (MemoryStream memory_stream = new MemoryStream())
+            using (BinaryReader binary_reader = new BinaryReader(memory_stream))
+            {
+                // Writing the data to the stream, and skipping the MessageName part
+                memory_stream.Write(package.Bytes, 0, package.Size);
+                memory_stream.Seek (sizeof(ushort), SeekOrigin.Begin);
                 
-            DeserializeAdditionalData(binary_reader);
+                DeserializeAdditionalData(binary_reader);
+            }
         }
 
         #endregion

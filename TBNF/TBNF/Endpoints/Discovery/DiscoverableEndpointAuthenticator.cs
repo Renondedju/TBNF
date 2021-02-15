@@ -93,11 +93,13 @@ namespace TBNF
         /// <returns>IP address, or null if the operation failed</returns>
         private static IPAddress GetIpAddress()
         {
-            using Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
-            socket.Connect("8.8.8.8", 0);
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+            {
+                socket.Connect("8.8.8.8", 0);
 
-            if (socket.LocalEndPoint is IPEndPoint endpoint)
-                return endpoint.Address;
+                if (socket.LocalEndPoint is IPEndPoint endpoint)
+                    return endpoint.Address;
+            }
 
             return null;
         }

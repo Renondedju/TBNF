@@ -82,7 +82,7 @@ namespace TBNF
         /// <returns>Message name or 0 if the type has not been registered</returns>
         public static ushort GetMessageName(Type message_type)
         {
-            return s_register.GetValueOrDefault(message_type);
+            return (ushort) (s_register.TryGetValue(message_type, out ushort name) ? name : 0);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace TBNF
         /// <returns>Type or null</returns>
         public static Type GetMessageType(ushort message_name)
         {
-            return s_reverse_register.GetValueOrDefault(message_name);
+            return s_reverse_register.TryGetValue(message_name, out Type message_type) ? message_type : null;
         }
 
         #endregion

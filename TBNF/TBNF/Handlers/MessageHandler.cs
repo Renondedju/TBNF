@@ -71,11 +71,18 @@
             // For code readability and flexibility purposes, we are checking here if everything is good
             if (message == null)
                 return;
-            
-            if (m_handler_cache.ContainsKey(message.MessageName))
-                m_handler_cache[message.MessageName].Invoke(this, new object[] {emitter, message});
-            else
-                DefaultHandler(emitter, message);
+
+            try
+            {
+                if (m_handler_cache.ContainsKey(message.MessageName))
+                    m_handler_cache[message.MessageName].Invoke(this, new object[] {emitter, message});
+                else
+                    DefaultHandler(emitter, message);
+            }
+            catch (Exception exception)
+            {
+                ExceptionHandler(emitter, message, exception);
+            }
         }
 
         /// <summary>
@@ -97,6 +104,15 @@
         {
             Console.WriteLine($"Received an unhandled message: {message}");
         }
+
+        /// <summary>
+        ///     Called to catch and handle any exceptions
+        /// </summary>
+        /// <param name="emitter">Endpoint that received the message</param>
+        /// <param name="message">Received message</param>
+        /// <param name="exception">Thrown exception</param>
+        protected virtual void ExceptionHandler(Endpoint emitter, Message message, Exception exception)
+        { /* By default exceptions are ignored */ }
 
         #endregion
     }

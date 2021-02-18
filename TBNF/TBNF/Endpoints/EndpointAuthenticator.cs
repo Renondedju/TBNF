@@ -25,11 +25,11 @@
 namespace TBNF
 {
     using System;
+    using System.Net;
     using System.Threading;
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using System.Collections.Generic;
-    using System.Net;
     using System.Net.NetworkInformation;
     
     using SystemMessages;
@@ -88,7 +88,7 @@ namespace TBNF
 
         /// <summary>
         ///     Starts the endpoint
-        ///     Use the <see cref=".Dispose"/> method to stop the endpoint
+        ///     Use the <see cref="EndpointAuthenticator.Dispose"/> method to stop the endpoint
         /// </summary>
         public virtual void Start()
         {
@@ -188,8 +188,8 @@ namespace TBNF
                     ConnectionTimeout       = ConnectionTimeout
                 };
                 
-                OnNewClientRegistered?.Invoke(this, endpoint);
                 m_clients[address] = endpoint;
+                OnNewClientRegistered?.Invoke(this, endpoint);
             }
         }
 

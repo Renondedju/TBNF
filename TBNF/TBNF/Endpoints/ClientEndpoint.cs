@@ -43,16 +43,24 @@ namespace TBNF
         /// <param name="handler">Message handler instance</param>
         /// <param name="host_ip_address">Distant IP address to connect to</param>
         /// <param name="host_port">Distant port to connect to</param>
-        public ClientEndpoint(MessageHandler handler, IPAddress host_ip_address, int host_port) : base(handler)
+        /// <param name="additional_identifier">Additional identifier, used to allow multiple clients on the same machine</param>
+        public ClientEndpoint(MessageHandler handler, IPAddress host_ip_address, int host_port, ushort additional_identifier = 0) : base(handler)
         {
             // Looking for every available mac address on this machine
             IEnumerable<PhysicalAddress> addresses = from   net_interface in NetworkInterface.GetAllNetworkInterfaces()
                                                      where  net_interface.NetworkInterfaceType != NetworkInterfaceType.Loopback
                                                      select net_interface.GetPhysicalAddress();
 
+            byte[] destination      = new byte[8];
+            byte[] address_bytes    = addresses.First().GetAddressBytes();
+            byte[] additional_bytes = BitConverter.GetBytes(additional_identifier);
+
+            Buffer.BlockCopy(address_bytes   , 0, destination, 0, 6);
+            Buffer.BlockCopy(additional_bytes, 0, destination, 6, 2);
+            
             m_host_address = host_ip_address;
             m_host_port    = host_port;
-            MacAddress     = addresses.FirstOrDefault();
+            MacAddress     = new PhysicalAddress(destination);
 
             // Automatic reconnection logic
             OnDisconnection     += async _ => await RequestConnection(ConnectionTimeout);
@@ -106,7 +114,7 @@ namespace TBNF
         {
             if (GlobalCancellation.IsCancellationRequested)
                 return;
-            
+
             // Creating the timeout cancellation source
             CancellationTokenSource timeout_cancellation = CancellationTokenSource.CreateLinkedTokenSource(GlobalCancellation.Token);
             timeout_cancellation.CancelAfter(timeout);

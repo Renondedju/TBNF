@@ -57,9 +57,12 @@ namespace SampleClient
                 IPEndPoint endpoint = discovered_endpoints[0].Item2;
 
                 Console.WriteLine($"Attempting to connect to the first endpoint found ({endpoint.Address}:{endpoint.Port})");
-                await StartClient(endpoint.Address, endpoint.Port);
+                
+                Task client1 = StartClient(endpoint.Address, endpoint.Port);
+                Task client2 = StartClient(endpoint.Address, endpoint.Port);
             }
 
+            Console.ReadLine();
             Console.WriteLine("Cleaning up...");
         }
 
@@ -70,8 +73,9 @@ namespace SampleClient
         /// <param name="port">IP port of the server</param>
         private static async Task StartClient(IPAddress address, int port)
         {
+            Random               random   = new Random();
             DefaultHandler       handler  = new DefaultHandler();
-            using ClientEndpoint endpoint = new ClientEndpoint(handler, address, port)
+            using ClientEndpoint endpoint = new ClientEndpoint(handler, address, port, (ushort) random.Next(ushort.MinValue, ushort.MaxValue))
             {
                 InactivityCheckInterval = TimeSpan.FromSeconds(5),
                 ConnectionTimeout       = TimeSpan.FromSeconds(10)
